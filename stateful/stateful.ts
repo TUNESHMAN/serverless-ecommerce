@@ -4,7 +4,18 @@ import { Construct } from "constructs";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 export interface CustomStackProps extends cdk.StackProps {
+  stage: string;
+  custName: string;
+  appName: string;
+  servName: string;
   retainResource: boolean;
+  stackName: string;
+  domain: {
+    hostedZoneName: string;
+    hostedZoneId: string;
+    domainName: string;
+    certId: string;
+  };
 }
 
 export class EcommerceAppStatefulStack extends cdk.Stack {

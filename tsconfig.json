@@ -2,16 +2,14 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "esModuleInterop": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
@@ -20,12 +18,20 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "typeRoots": ["./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@adapters/*": ["./stateless/src/adapters/*"],
+      "@config/*": ["./stateless/src/config/*"],
+      "@config": ["./stateless/src/config/index"],
+      "@errors": ["./stateless/src/errors/index"],
+      "@schemas/*": ["./stateless/src/schemas/*"],
+      "@shared": ["./stateless/src/shared/index"],
+      "@dto/*": ["stateless/src/dto/*"],
+      "@use-cases/*": ["./stateless/src/use-cases/*"],
+      "@packages/*": ["./packages/*"],
+      "@events/*": ["stateless/src/events/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "exclude": ["node_modules", "cdk.out"]
 }
