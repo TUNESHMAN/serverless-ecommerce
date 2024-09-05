@@ -53,7 +53,7 @@ export class ApiGatewayConstruct extends Construct {
 
     // Create an API Gateway
     this.restApi = new apigateway.RestApi(this, props.apiName, {
-      disableExecuteApiEndpoint: true,
+      // disableExecuteApiEndpoint: true,
       deployOptions: {
         stageName: props.stageName,
         loggingLevel: apigateway.MethodLoggingLevel.INFO,

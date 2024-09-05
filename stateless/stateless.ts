@@ -63,7 +63,7 @@ export class EcommerceAppStatelessStack extends cdk.Stack {
     const namingUtils = new NamingUtils(config);
     const getProductLambda = new LambdaConstruct(this, "GetProductLambda", {
       functionName: namingUtils.createResourceName("getProducts"),
-      handler: 'handler',
+      handler: "handler",
       runtime: lambda.Runtime.NODEJS_20_X,
       codePath: path.join(
         __dirname,
@@ -74,12 +74,34 @@ export class EcommerceAppStatelessStack extends cdk.Stack {
       logRetention: logs.RetentionDays.ONE_DAY,
       removalPolicy: this.resourceRetained(props.retainResource),
       environment: {
-        E_COMMERCE_APP_TABLE: this.eCommerceTable.table.tableName,
+        E_COMMERCE_APP_TABLE: this.eCommerceTable.tableName,
         ...lambdaPowerToolsConfig,
       },
     });
 
+    const createProductLambda = new LambdaConstruct(
+      this,
+      "CreateProductLambda",
+      {
+        functionName: namingUtils.createResourceName("createProducts"),
+        handler: "handler",
+        runtime: lambda.Runtime.NODEJS_20_X,
+        codePath: path.join(
+          __dirname,
+          "../stateless/src/adapters/primary/create-products/create-products.adapter.ts"
+        ),
+        memorySize: 256,
+        roleName: namingUtils.createResourceName("createProductRole"),
+        logRetention: logs.RetentionDays.ONE_DAY,
+        removalPolicy: this.resourceRetained(props.retainResource),
+        environment: {
+          E_COMMERCE_APP_TABLE: this.eCommerceTable.tableName,
+          ...lambdaPowerToolsConfig,
+        },
+      }
+    );
     this.eCommerceTable.table.grantReadData(getProductLambda.lambdaFunction);
+    this.eCommerceTable.table.grantReadWriteData(createProductLambda.lambdaFunction);
   }
 
   resourceRetained(retainResource: boolean) {

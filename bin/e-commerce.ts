@@ -16,7 +16,7 @@ const app = new cdk.App();
 
 const eCommerceAppStatefulStack = new EcommerceAppStatefulStack(
   app,
-  "LeightonAutomationPlatformStatefulStack",
+  "EcommerceStatefulStack",
   {
     stage: dynamicStageName,
     custName: CUST_NAME,
@@ -35,7 +35,7 @@ const eCommerceAppStatefulStack = new EcommerceAppStatefulStack(
 
 new EcommerceAppStatelessStack(
   app,
-  "LeightonAutomationPlatformStatelessStack",
+  "EcommerceStatelessStack",
   {
     stage: dynamicStageName,
     custName: CUST_NAME,

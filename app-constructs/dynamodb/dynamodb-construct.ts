@@ -8,14 +8,14 @@ export interface DynamoDbConstructProps {
   partitionKey: { name: string; type: string };
 }
 
-export class DynamoDbConstruct extends Construct {
+export class DynamoDbConstruct extends Construct { 
   public readonly table: dynamodb.Table;
   public readonly tableName: string;
 
   constructor(scope: Construct, id: string, props: DynamoDbConstructProps) {
     super(scope, id);
 
-    this.table = new dynamodb.Table(this, this.tableName, {
+    this.table = new dynamodb.Table(this, props.tableName, {
       tableName: props.tableName,
       partitionKey: {
         name: props.partitionKey.name,
