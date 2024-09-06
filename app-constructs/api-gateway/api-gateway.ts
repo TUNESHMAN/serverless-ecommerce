@@ -10,7 +10,7 @@ import * as route53Target from "aws-cdk-lib/aws-route53-targets";
 interface ApiGatewayRestApiConstructProps {
   apiName: string;
   lambdaFunction: NodejsFunction;
-  authorizerConfig: {
+  authorizerConfig?: {
     lambdaAuthorizer: NodejsFunction;
     authorizerName: string;
     identitySources: string[];

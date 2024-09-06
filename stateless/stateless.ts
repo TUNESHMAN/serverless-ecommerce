@@ -10,6 +10,7 @@ import {
   s3Construct,
   DynamoDbConstruct,
   LambdaConstruct,
+  ApiGatewayConstruct,
 } from "../app-constructs";
 import { Construct } from "constructs";
 import { IConfigProps, NamingUtils } from "../utils/naming-utils";
@@ -101,7 +102,29 @@ export class EcommerceAppStatelessStack extends cdk.Stack {
       }
     );
     this.eCommerceTable.table.grantReadData(getProductLambda.lambdaFunction);
-    this.eCommerceTable.table.grantReadWriteData(createProductLambda.lambdaFunction);
+    this.eCommerceTable.table.grantReadWriteData(
+      createProductLambda.lambdaFunction
+    );
+
+    const apigwDynamoDBRole = new iam.Role(this, "apigwDynamoDBRole", {
+      assumedBy: new iam.ServicePrincipal("apigateway.amazonaws.com"),
+    });
+    this.eCommerceTable.table.grantReadWriteData(apigwDynamoDBRole);
+
+    new ApiGatewayConstruct(this, "apiGateway", {
+      apiName: namingUtils.createResourceName("babs-eCommerce-api"),
+      lambdaFunction: createProductLambda.lambdaFunction,
+
+      stageName: config.stageName,
+      method: "POST",
+      resourceName: "products",
+      logsConfig: {
+        logGroupName: "productApiLogs",
+        retentionDays: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: this.resourceRetained(props.retainResource),
+      },
+      credentials: apigwDynamoDBRole,
+    });
   }
 
   resourceRetained(retainResource: boolean) {
