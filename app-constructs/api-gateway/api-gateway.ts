@@ -10,7 +10,7 @@ import * as route53Target from "aws-cdk-lib/aws-route53-targets";
 interface ApiGatewayRestApiConstructProps {
   apiName: string;
   lambdaFunction: NodejsFunction;
-  authorizerConfig?: {
+  authorizerConfig: {
     lambdaAuthorizer: NodejsFunction;
     authorizerName: string;
     identitySources: string[];
@@ -62,8 +62,8 @@ export class ApiGatewayConstruct extends Construct {
         accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
         accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
       },
-      cloudWatchRole: false,
-      cloudWatchRoleRemovalPolicy: props.logsConfig.removalPolicy,
+      // cloudWatchRole: false,
+      // cloudWatchRoleRemovalPolicy: props.logsConfig.removalPolicy,
       deploy: true,
       endpointTypes: [apigateway.EndpointType.REGIONAL],
       failOnWarnings: true,
@@ -80,14 +80,14 @@ export class ApiGatewayConstruct extends Construct {
       ),
     });
 
-    const authorizer = new apigateway.RequestAuthorizer(
-      this,
-      props.authorizerConfig.authorizerName,
-      {
-        handler: props.authorizerConfig.lambdaAuthorizer,
-        identitySources: props.authorizerConfig.identitySources,
-      }
-    );
+    // const authorizer = new apigateway.RequestAuthorizer(
+    //   this,
+    //   props.authorizerConfig.authorizerName,
+    //   {
+    //     handler: props.authorizerConfig.lambdaAuthorizer,
+    //     identitySources: props.authorizerConfig.identitySources,
+    //   }
+    // );
 
     // Create a resource and method
     this.restApi.root.addResource(props.resourceName).addMethod(
@@ -98,7 +98,7 @@ export class ApiGatewayConstruct extends Construct {
       }),
       {
         authorizationType: apigateway.AuthorizationType.CUSTOM,
-        authorizer,
+        // authorizer,
       }
     );
     if (props.domain) {

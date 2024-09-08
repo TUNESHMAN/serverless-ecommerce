@@ -62,6 +62,21 @@ export class EcommerceAppStatelessStack extends cdk.Stack {
     };
 
     const namingUtils = new NamingUtils(config);
+
+    const lambdaAuthorizer = new LambdaConstruct(this, "Authorizer", {
+      handler: "handler",
+      runtime: lambda.Runtime.NODEJS_20_X,
+      memory: 1024,
+      codePath: path.join(
+        __dirname,
+        "../stateless/src/adapters/primary/authorizer/authorizer.adapter.ts"
+      ),
+      functionName: namingUtils.createResourceName("authorizer"),
+      roleName: namingUtils.createResourceName("authorizerRole"),
+      removalPolicy: this.resourceRetained(props.retainResource),
+      logRetention: logs.RetentionDays.ONE_DAY,
+    });
+
     const getProductLambda = new LambdaConstruct(this, "GetProductLambda", {
       functionName: namingUtils.createResourceName("getProducts"),
       handler: "handler",
@@ -114,10 +129,14 @@ export class EcommerceAppStatelessStack extends cdk.Stack {
     new ApiGatewayConstruct(this, "apiGateway", {
       apiName: namingUtils.createResourceName("babs-eCommerce-api"),
       lambdaFunction: createProductLambda.lambdaFunction,
-
       stageName: config.stageName,
       method: "POST",
       resourceName: "products",
+      authorizerConfig: {
+        lambdaAuthorizer: lambdaAuthorizer.lambdaFunction,
+        authorizerName: lambdaAuthorizer.lambdaFunctionName,
+        identitySources: ["method.request.header.Authorization"],
+      },
       logsConfig: {
         logGroupName: "productApiLogs",
         retentionDays: logs.RetentionDays.ONE_MONTH,
