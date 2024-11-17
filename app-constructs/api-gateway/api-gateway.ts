@@ -10,11 +10,12 @@ import * as route53Target from "aws-cdk-lib/aws-route53-targets";
 interface ApiGatewayRestApiConstructProps {
   apiName: string;
   lambdaFunction: NodejsFunction;
-  authorizerConfig: {
-    lambdaAuthorizer: NodejsFunction;
-    authorizerName: string;
-    identitySources: string[];
-  };
+  // authorizerConfig: {
+  //   lambdaAuthorizer: NodejsFunction;
+  //   authorizerName: string;
+  //   identitySources: string[];
+  //   authorizationType: apigateway.AuthorizationType;
+  // };
   domain?: {
     domainName: string;
     certificateARN: string;
@@ -90,17 +91,24 @@ export class ApiGatewayConstruct extends Construct {
     // );
 
     // Create a resource and method
-    this.restApi.root.addResource(props.resourceName).addMethod(
+    const resource = this.restApi.root.addResource(props.resourceName);
+
+    resource.addMethod(
       props.method,
       new apigateway.LambdaIntegration(props.lambdaFunction, {
         proxy: true,
         allowTestInvoke: true,
-      }),
-      {
-        authorizationType: apigateway.AuthorizationType.CUSTOM,
-        // authorizer,
-      }
+      })
+      // {
+      //   authorizationType: apigateway.AuthorizationType.CUSTOM,
+      //   authorizer,
+      // }
     );
+
+    resource.addMethod("GET", new apigateway.LambdaIntegration(props.lambdaFunction));
+
+
+
     if (props.domain) {
       const hostedZone = route53.HostedZone.fromHostedZoneAttributes(
         this,

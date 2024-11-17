@@ -1,11 +1,14 @@
 import * as s3 from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import { RemovalPolicy } from "aws-cdk-lib";
+import * as iam from "aws-cdk-lib/aws-iam";
 
 export interface S3ConstructProps {
   bucketName: string;
   removalPolicy?: RemovalPolicy;
   autoDeleteObjects: boolean;
+  versioned?: boolean;
+  blockPublicAccess?: boolean;
 }
 
 export class s3Construct extends Construct {
@@ -20,7 +23,18 @@ export class s3Construct extends Construct {
       bucketName: this.bucketName,
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: props.autoDeleteObjects,
+      versioned: props.versioned || false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     });
-    this.bucketName = props.bucketName;
+  
+    const s3Policy = new iam.PolicyStatement({
+      actions: ["s3:PutObject", "s3:GetObject"],
+      resources: [this.s3Bucket.bucketArn + "/*"], 
+      principals: [new iam.AnyPrincipal()],
+    });
+
+    this.s3Bucket.addToResourcePolicy(s3Policy);
   }
 }
+
+

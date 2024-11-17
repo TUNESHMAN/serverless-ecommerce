@@ -3,47 +3,34 @@ import { Construct } from "constructs";
 import { RemovalPolicy } from "aws-cdk-lib";
 
 export interface CognitoConstructProps {
-  userPoolName: "my-user-pool";
+  userPoolName: string;
   selfSignUpEnabled: true;
-  signInAliases: {
-    email: true;
-    username: true;
-  };
   autoVerify: {
     email: true;
   };
-  standardAttributes: {
-    givenName: {
-      required: true;
-      mutable: true;
-    };
-    familyName: {
-      required: true;
-      mutable: true;
-    };
-  };
-
-  passwordPolicy: {
-    minLength: 8;
-    requireLowercase: true;
-    requireUppercase: true;
-    requireDigits: true;
-    requireSymbols: true;
-  };
-  accountRecovery: cognito.AccountRecovery.EMAIL_ONLY;
-  removalPolicy: RemovalPolicy;
 }
 
 export class CognitoConstruct extends Construct {
   public readonly userPool: cognito.UserPool;
   public readonly userPoolName: string;
+  public readonly userPoolClientName: string;
+  public readonly userPoolClient: cognito.UserPoolClient;
 
   constructor(scope: Construct, id: string, props: CognitoConstructProps) {
     super(scope, id);
 
-    this.userPool = new cognito.UserPool(this, this.userPoolName, {
-      userPoolName: props.userPoolName,
-      removalPolicy: props.removalPolicy,
+    this.userPool = new cognito.UserPool(this, "UserPool", {
+      selfSignUpEnabled: props.selfSignUpEnabled,
+      autoVerify: {
+        email: props.autoVerify.email,
+      },
+    });
+
+    this.userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
+      userPool: this.userPool,
+      authFlows: {
+        userPassword: true,
+      },
     });
   }
 }

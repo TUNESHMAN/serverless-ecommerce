@@ -8,9 +8,9 @@ import { setEnv } from "./env";
 
 const dynamicEnv = setEnv(process.env.CDK_DEPLOY_STAGE);
 const dynamicStageName = dynamicEnv.branchName;
-const CUST_NAME = "l8on";
-const APP_NAME = "hr";
-const SERVICE_NAME = "autom8";
+const CUST_NAME = "babs";
+const APP_NAME = "service";
+const SERVICE_NAME = "ecommerce";
 
 const app = new cdk.App();
 
@@ -44,7 +44,9 @@ new EcommerceAppStatelessStack(
     stackName: `${CUST_NAME}-${SERVICE_NAME}-${APP_NAME}-stateless-${dynamicStageName}`,
     retainResource: dynamicEnv.retainResource,
     table: eCommerceAppStatefulStack.eCommerceTable,
-    s3Bucket: eCommerceAppStatefulStack.s3Bucket,
+    userPool: eCommerceAppStatefulStack.eCommerceUserPool,
+    userPoolClient: eCommerceAppStatefulStack.eCommerceUserPoolClient,
+    s3Bucket: eCommerceAppStatefulStack.productsMediaBucket,
     domain: {
       hostedZoneName: dynamicEnv.hostedZoneName,
       hostedZoneId: dynamicEnv.hostedZoneId,
